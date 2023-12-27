@@ -1,0 +1,72 @@
+{
+  "name": "@unipackage/testenv",
+  "version": "0.1.0",
+  "description": "datastore",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rm -rf ./dist; cp -rf ./src ./dist;",
+    "build:test": "rm -rf ./dist-test;tsc -p tsconfig.test.json;",
+    "mongodb-anon:build": "cd ./src/scripts/docker/mongodb; ./execute.sh build anon;cd -",
+    "mongodb-anon:run": "cd ./src/scripts/docker/mongodb; ./execute.sh run anon 27017;cd -",
+    "mongodb-anon:start": "cd ./src/scripts/docker/mongodb; ./execute.sh start anon;cd -",
+    "mongodb-anon:stop": "cd ./src/scripts/docker/mongodb; ./execute.sh stop anon;cd -",
+    "mongodb-anon:restart": "cd ./src/scripts/docker/mongodb; ./execute.sh restart anon;cd -",
+    "mongodb-anon:clear": "cd ./src/scripts/docker/mongodb; ./execute.sh clear anon;cd -",
+    "mongodb-anon:delete": "cd ./src/scripts/docker/mongodb; ./execute.sh delete anon;cd -",
+    "mongodb-auth:build": "cd ./src/scripts/docker/mongodb; ./execute.sh build auth;cd -",
+    "mongodb-auth:run": "cd ./src/scripts/docker/mongodb; ./execute.sh run auth 27018;cd -",
+    "mongodb-auth:start": "cd ./src/scripts/docker/mongodb; ./execute.sh start auth;cd -",
+    "mongodb-auth:stop": "cd ./src/scripts/docker/mongodb; ./execute.sh stop auth;cd -",
+    "mongodb-auth:restart": "cd ./src/scripts/docker/mongodb; ./execute.sh restart auth;cd -",
+    "mongodb-auth:clear": "cd ./src/scripts/docker/mongodb; ./execute.sh clear auth;cd -",
+    "mongodb-auth:delete": "cd ./src/scripts/docker/mongodb; ./execute.sh delete auth;cd -",
+    "pretest:anon": "(npm run mongodb-anon:build & pid=$! && wait $pid )  && (npm run mongodb-anon:run  & pid=$! && wait $pid )&& npm run mongodb-anon:restart",
+    "posttest:anon": "npm run mongodb-anon:stop && npm run mongodb-anon:clear && npm run mongodb-anon:delete;",
+    "pretest:auth": "(npm run mongodb-auth:build & pid=$! && wait $pid )  && (npm run mongodb-auth:run  & pid=$! && wait $pid ) && npm run mongodb-auth:restart;",
+    "posttest:auth": "npm run mongodb-auth:stop && npm run mongodb-auth:clear && npm run mongodb-auth:delete;",
+    "test:setup": "npm run pretest:anon && npm run pretest:auth;",
+    "test:clean": "npm run posttest:anon && npm run posttest:auth;",
+    "test:main": "npm run build:test; mocha ",
+    "test": "npm run test:clean; npm run test:setup; npm run test:main;",
+    "readme": "npx readme-md-generator -p ./templates/readme.md",
+    "commit": "git-cz",
+    "release": "npm run build && git branch --show-current | grep -q '^main$' && release-it"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unipackage/testenv.git"
+  },
+  "keywords": [
+    "datastore",
+    "mongo",
+    "ts",
+    "js"
+  ],
+  "author": "waynewyang",
+  "license": "MIT and APACHE",
+  "bugs": {
+    "url": "https://github.com/unipackage/testenv/issues"
+  },
+  "homepage": "https://github.com/unipackage/testenv#readme",
+  "dependencies": {
+    "@types/node": "20.6.2",
+    "@unipackage/datastore": "^0.1.5"
+  },
+  "devDependencies": {
+    "@babel/runtime": "^7.23.4",
+    "@release-it/conventional-changelog": "^8.0.1",
+    "@types/chai": "^4.3.11",
+    "@types/dotenv": "^8.2.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "20.6.2",
+    "all-contributors-cli": "^6.26.1",
+    "chai": "^4.3.10",
+    "git-cz": "^4.9.0",
+    "mocha": "^10.2.0",
+    "readme-md-generator": "^1.0.0",
+    "release-it": "^17.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}

@@ -1,0 +1,52 @@
+name: build and test
+on:
+    workflow_dispatch:
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+
+jobs:
+    buildAndTest:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                node-version: [18.x]
+
+        steps:
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Check docker version
+              run: |
+                  docker --version
+
+            - name: Check docker info
+              run: |
+                  docker info
+
+            - name: Install dependencies
+              run: |
+                  npm install
+
+            - name: Build
+              run: |
+                  npm run build
+
+            - name: Setup Before Test
+              run: |
+                  npm run test:setup
+
+            - name: Test
+              run: |
+                  npm run test:main
+
+            - name: Clean After Test
+              run: |
+                  npm run test:clean
